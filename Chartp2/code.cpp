@@ -11,6 +11,13 @@ public:
 		}
 };
 
+void test1() {
+	background_task f;
+	std::thread my_thread(f);
+	
+	// std::thread my_thread1(background_task());
+	std::thread my_thread2((background_task()));
+}
 
 struct func {
 	int& i;
@@ -25,6 +32,13 @@ struct func {
 		}
 	}
 };
+
+void test2() {
+	int state = 0;
+	func my_func(state);
+	std::thread my_thread(my_func);
+	my_thread.detach();
+}
 
 class thread_guard {
 	std::thread& t;
@@ -60,20 +74,18 @@ void f1() {
 	printf("thread %lu exit now\n", std::this_thread::get_id());
 }
 
-void test1() {
-	background_task f;
-	std::thread my_thread(f);
-	
-	// std::thread my_thread1(background_task());
-	std::thread my_thread2((background_task()));
+void f(int i, std::string const& s) {
+	// do something
 }
 
-void test2() {
-	int state = 0;
-	func my_func(state);
-	std::thread my_thread(my_func);
-	my_thread.detach();
+void not_oops(int some) {
+	char buf[1024];
+	// sprintf(buf, "%i", some);
+	// std::thread t(f, 3, std::string(buf));
+	std::thread t(f, 3, buf);
+	t.detach();
 }
+
 
 int main() {
 	// test1();
