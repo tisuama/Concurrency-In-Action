@@ -74,7 +74,9 @@ void f1() {
 	printf("thread %lu exit now\n", std::this_thread::get_id());
 }
 
-void f(int i, std::string const& s) {
+
+// 隐式类型转换时机
+void f2(int i, std::string const& s) {
 	// do something
 }
 
@@ -82,14 +84,56 @@ void not_oops(int some) {
 	char buf[1024];
 	// sprintf(buf, "%i", some);
 	// std::thread t(f, 3, std::string(buf));
-	std::thread t(f, 3, buf);
+	// 为什么这种写法会有问题？隐式类型转换时机
+	std::thread t(f2, 3, std::string(buf));
 	t.detach();
 }
 
+void update_data_for_widget(int x, int&y) {
+	printf("update data for widget, x: %d, y: %d\n", x, y);
+}
+
+void oops_again() {
+	int state = 1;
+	std::thread t(update_data_for_widget, 1, state);
+	t.join();
+}
+
+
+
+// const rvalue的使用
+class A {
+public:
+	A() {
+		printf("A's constrcut is called\n");
+	}
+	~A() {
+		printf("A's deconstruct is called\n");
+	}
+};
+
+class B: public A {
+public:
+	B() {
+		printf("B's constrcut is called\n");
+	}
+	~B() {
+		printf("B's deconstruct is called\n");
+	}
+};
+
+B factory() {
+	return B();
+}
 
 int main() {
+	printf("=== start to run test ===\n");
 	// test1();
 	// test2();
 	// f();
-	f1();
+	// f1();
+	// oops_again();
+	
+	const A& a = factory();
+	printf("=== sucesssfully run test ===\n");
 }
