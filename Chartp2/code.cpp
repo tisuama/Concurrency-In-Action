@@ -89,7 +89,7 @@ void not_oops(int some) {
 	t.detach();
 }
 
-void update_data_for_widget(int x, int&y) {
+void update_data_for_widget(int x, const int&y) {
 	printf("update data for widget, x: %d, y: %d\n", x, y);
 }
 
@@ -99,7 +99,10 @@ void oops_again() {
 	t.join();
 }
 
-
+class X {
+	public:
+		void do_length_work(int x) { printf("thread class %d\n", x); }
+};
 
 // const rvalue的使用
 class A {
@@ -136,4 +139,10 @@ int main() {
 	
 	const A& a = factory();
 	printf("=== sucesssfully run test ===\n");
+	const int&x = 5;
+	printf("const refrence value: %d\n", x);
+	
+	X my_x;
+	int num(0);
+	std::thread t(&X::do_length_work, &my_x, num);
 }

@@ -31,3 +31,11 @@ void oops_again() {
 }
 ```
 
+3. 如果参数仅仅支持移动(move)，不能拷贝时会发生什么情况？“移动”指数据的所有权发生改变。`std::unqie_ptr`就是这样一种类型。移动构造函数(move constructor)和移动赋值操作符(move assignment operator)允许一个对象的所有权在多个`std::unique_ptr`中传递。当对象是临时变量时，则自动进行移动操作；但是当对象是一个命名变量，转移是要使用`std::move`显式移动。
+```
+void process_big_object(std::unqiue_ptr<big_object>);
+
+std::unique_ptr<big_object> p(new big_object);
+p->prepare_data(42);
+std::thread t(process_big_object, std::move(p));
+```
