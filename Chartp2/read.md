@@ -39,3 +39,4 @@ std::unique_ptr<big_object> p(new big_object);
 p->prepare_data(42);
 std::thread t(process_big_object, std::move(p));
 ```
+4. `std::thread`和`std::unique_ptr`所属权上相似，`std::thread`不能占用对象的所有权，但它能占有其他资源：每个实例都负责管理一个线程。这依赖于`std::thread`的可移动且不可复制性。
