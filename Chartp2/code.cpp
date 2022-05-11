@@ -23,8 +23,6 @@ struct func {
 	int& i;
 	func(int& i_): i(i_) {}
 	void operator() () {
-		using namespace std::chrono_literals;
-		std::this_thread::sleep_for(2s);
 		for (unsigned j = 0; j < 1000000; j++) {
 			if (j % 100000 == 0) {
 				printf("j: %d, i: %d\n", j, i);
@@ -129,8 +127,17 @@ B factory() {
 	return B();
 }
 
+
+void func1() {
+	std::cout << "func1 " << std::endl;
+}
+
+void func2() {
+	std::cout << "func2 " << std::endl;
+}
+
 int main() {
-	printf("=== start to run test ===\n");
+	printf("==== start to run test ====\n");
 	// test1();
 	// test2();
 	// f();
@@ -145,4 +152,14 @@ int main() {
 	X my_x;
 	int num(0);
 	std::thread t(&X::do_length_work, &my_x, num);
+
+	// 转移所有权
+	std::thread t1(func1);	
+	std::thread t2 = std::move(t1);
+	t1 = std::thread(func2);
+	std::thread t3;
+	t3 = std::move(t2);
+	t1 = std::move(t3);
+	
+	std::cout << "===== All test complete =====" << std::endl;
 }
