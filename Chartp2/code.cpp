@@ -136,6 +136,26 @@ void func2() {
 	std::cout << "func2 " << std::endl;
 }
 
+// 所有权
+class scoped_thread {
+public:
+	explicit scoped_thread(std::thread t): t(std::move(t)) {
+		if (!t.joinable()) {
+			abort();
+		}
+	}
+	
+	~scoped_thread() {
+		t.join();
+	}
+
+	scoped_thread(const scoped_thread &) = delete;
+	scoped_thread& operator=(const scoped_thread&) = delete;
+private:
+	std::thread t;
+
+};
+
 int main() {
 	printf("==== start to run test ====\n");
 	// test1();
@@ -156,10 +176,13 @@ int main() {
 	// 转移所有权
 	std::thread t1(func1);	
 	std::thread t2 = std::move(t1);
-	t1 = std::thread(func2);
+	t1 = std::thread(func2); // 构造的临时对象
 	std::thread t3;
 	t3 = std::move(t2);
 	t1 = std::move(t3);
+
+	// scoped_thread
+	scoped_thread st(std::thread(func1()));
 	
 	std::cout << "===== All test complete =====" << std::endl;
 }
